@@ -1,0 +1,10 @@
+{
+    "name": "nfteasy",
+    "version": "0.0.1",
+    "description": "A simple set of tutorials to teach you how to create your own Non Fungible Token contracts on Ethereum.",
+    "scripts": {},
+    "keywords": ["open", "education", "tutorial"],
+    "author": "cryptowanderer",
+    "license": "CC0",
+    "devDependencies": {}
+}
