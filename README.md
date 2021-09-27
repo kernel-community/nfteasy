@@ -6,7 +6,7 @@ The beginning of each build guild session can be found on each numbered branch i
 
 Though we're going to begin in a very general way, we will have to make some opinionated choices as we dive deeper and get closer to a production-ready set of contracts. Please do not think that this is the only - or even the best! - way to write non-fungible token contracts. It is only one way of many, presented for educational purposes, not as a definitive stand about how NFTs should look.
 
-## Lesson 1 - Long Life Libraries
+## Lesson 0 - Long Life Libraries
 
 In this lesson, we're going to get a little more familiar with hardhat and use it to reflect on the OpenZeppelin ERC721 library and what it can do for us.
 
@@ -76,131 +76,13 @@ contract Babel is ERC721URIStorage {
 }
 ```
 
-## Compile and Deploy
-
-This gets a whole new section, because compiling and deploying contracts safely is something that is worth taking some time to learn. We're going to do it with typescript, which offers us some great safety guarantees that are, in my opinion, worth the extra effort.
-
-9. Install all the necessary dev dependencies by running the following in your terminal:
-
-```bash
-npm i --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers ethers
-npm i --save-dev ts-node typescript typechain ts-generator
-npm i --save-dev @types/node @types/mocha @types/chai @typechain/ethers-v5 @typechain/hardhat
-```
-
-10. Rename your `hardhat.config.js` file to `hardhat.config.ts`.
-
-11. Add the following configuration code to it. We'll explain each line in the live session.
-
-```ts
-import { HardhatUserConfig } from "hardhat/types";
-import "@nomiclabs/hardhat-waffle";
-import "@typechain/hardhat";
-
-const config: HardhatUserConfig = {
-  defaultNetwork: "hardhat",
-  solidity: {
-      compilers: [{ version: "0.8.6", settings: {} }],
-  },
-  networks: {
-      hardhat: {
-          initialBaseFeePerGas: 0,
-      },
-      localhost: {},
-  }
-};
-
-export default config;
-```
-
-12. Compile your brand new Babel contract!
-
-```bash
-npx hardhat compile
-```
-
-You should see three new directories pop up: `artifacts`, `cache`, and `typechain`. Each of these contains useful information for developers, which we'll also briefly look at in our live session.
-
-13. The last thing we need to do is write a deploy `task`. So, create a `tasks` directory with three things in it: `task-names.ts`, `accounts.ts` and another directory called `deployment`, with a `deploy.ts` file in it. 
-
-Paste the following code into `task-names.ts`:
-
-```ts
-export const TASK_ACCOUNTS: string = "accounts";
-export const TASK_DEPLOY: string = "deploy";
-```
-
-Paste the following code into `accounts.ts`:
-
-```ts
-import { Signer } from "@ethersproject/abstract-signer";
-import { task } from "hardhat/config";
-
-import { TASK_ACCOUNTS } from "./task-names";
-
-task(TASK_ACCOUNTS, "Prints the list of accounts", async (_taskArgs, hre) => {
-  const accounts: Signer[] = await hre.ethers.getSigners();
-
-  for (const account of accounts) {
-    console.log(await account.getAddress());
-  }
-});
-```
-
-And, finally, paste this into `deployment/deploy.ts`:
-
-```ts
-import { task } from "hardhat/config";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
-import { Babel__factory } from "../../typechain";
-import { TASK_DEPLOY } from "../task-names";
-
-task(TASK_DEPLOY, "Deploy contract")
-  .setAction(async (args, hre) => {
-    let deployer: SignerWithAddress;
-
-    const network = await hre.ethers.provider.getNetwork();
-    console.log(`network: ${network.name}`);
-    
-
-    [deployer] = await hre.ethers.getSigners();
-    const address = await deployer.getAddress();
-    console.log(`deployer address: ${address}`);
-
-    const BabelFactory = (await hre.ethers.getContractFactory(
-      'Babel',
-      deployer
-    )) as Babel__factory;
-
-    console.log('Deploying Babel...');
-    const babel = await BabelFactory.deploy();
-    await babel.deployed();
-
-    console.log('Babel deployed to:', babel.address);
-  });
-```
-
-14. Add these last two lines below the other `imports` in `hardhat.config.ts` to complete it all:
-
-```ts
-import "./tasks/accounts";
-import "./tasks/deployment/deploy";
-```
-
-15. Now, you can run a local chain and deploy your contract:
-
-```bash
-npx hardhat node
-```
-
-and, in a new terminal:
-
-```bash
-npx hardhat deploy --network hardhat
-```
-
 ## Conclusion
 
-I know that the Compile and Deploy section may seem complicated. However, it has laid the foundation for everything we need going forward and gives us a great base to work from across multiple networks with strongly-typed guarantees.
+This work has laid the foundation for really understanding the full life cycle of developing a smart contract, whether it is an NFT or any other contract you feel inspired to write. We are very intentionally moving slowly and looking carefully at each of the tools we choose to pick up and use, because that is a critical part of the culture for which Kernel advocates.
 
-Tutorials sometimes take the easy route, which we have not done here. I want to give you some insight into what writing contracts for production actually looks like. This is not just a toy example, by the time we're done with this build guild, I want you to have a repo that you understand and which you can genuinely use for your own creative work and dreams.
+> I don't know exactly what a prayer is.  
+I do know how to pay attention, how to fall down  
+into the grass, how to kneel down in the grass,  
+how to be idle and blessed, how to stroll through the fields,  
+which is what I have been doing all day.  
+Tell me, what else should I have done?  
