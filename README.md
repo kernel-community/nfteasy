@@ -19,7 +19,7 @@ Now that we're more familiar with how open Opensea really is, let's get to work 
 1. First, make sure you switch to this branch, which has some helper contracts pre-added, which we will explain in due course as we build our NFTs with an actual marketplace in mind.
 
 ```bash
-git checkout lesson-3
+git checkout lesson-2
 ```
 
 2. Next, we're going to split up our Babel contract. Ideally, we want to keep all the logic associated with minting, trading and transfering our NFTs in one place, and just house the top-level information about Babel in the current contract. So, in your `contracts` directory, create a new file called `ERC721Tradable.sol` and add the code below to it. As always, we will explain this code in the live session:
