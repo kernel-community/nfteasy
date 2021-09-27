@@ -1,0 +1,28 @@
+{
+    "description": "Book 1 - Ode to Joy", 
+    "attributes": [
+        {
+            "trait_type": "Pages", 
+            "value": "121"
+        },
+        {
+            "trait_type": "Joy", 
+            "value": "11"
+        },
+        {
+            "trait_type": "Celebration", 
+            "value": "10"
+        },
+        {
+            "trait_type": "Attribute", 
+            "value": "Grateful"
+        },
+        {
+            "trait_type": "Attribute", 
+            "value": "Overflowing"
+        }
+    ],
+    "external_url": "https://arweave.net/SYB3B864z83qpER3rfCBy2BZZc5HH4ETXOOxoouL27Q", 
+    "image": "ar://pV_GNWJQp7JPmi5eJoyHTLAUmTbZqZ0jtvFNVnXC8sI", 
+    "name": "NFTeasy Book 1"
+}
