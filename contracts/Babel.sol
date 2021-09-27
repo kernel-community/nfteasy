@@ -1,25 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "./ERC721Tradable.sol";
 
-contract Babel is ERC721URIStorage {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+contract Babel is ERC721Tradable {
+    constructor(
+        address _proxyRegistryAddress
+    ) ERC721Tradable('Babel', 'LIB', _proxyRegistryAddress) {}
 
-    constructor() ERC721("Babel", "LIB") {}
-
-    function mintBook(address reader, string memory tokenURI)
-        public
-        returns (uint256)
-    {
-        _tokenIds.increment();
-
-        uint256 newBookId = _tokenIds.current();
-        _mint(reader, newBookId);
-        _setTokenURI(newBookId, tokenURI);
-
-        return newBookId;
+    /**
+     * @dev Link to Contract metadata https://docs.opensea.io/docs/contract-level-metadata
+    */
+    function contractURI() public pure returns (string memory) {
+        return "https://arweave.net/dI21K6IoG8k1kzVUNPswpSgyZ_NktEBqu2KUWbl9zMc";
     }
 }
