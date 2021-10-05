@@ -26,7 +26,6 @@ cd nfteasy
 3. Start your hardhat setup:
 
 ```bash
-npx hardhat
 npm install --save-dev "hardhat@^2.6.4"
 ```
 
