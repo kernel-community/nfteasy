@@ -22,7 +22,7 @@ npm i --save-dev ts-node typescript typechain ts-generator
 npm i --save-dev @types/node @types/mocha @types/chai @typechain/ethers-v5 @typechain/hardhat
 ```
 
-2. Rename your `hardhat.config.js` file to `hardhat.config.ts`.
+2. Create a file called `hardhat.config.ts`.
 
 3. Add the following configuration code to it. We'll explain each line in the live session.
 
