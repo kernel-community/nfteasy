@@ -16,10 +16,11 @@ There are many marketplaces for NFTs, each with their own advantages and drawbac
 
 Now that we're more familiar with how open Opensea really is, let's get to work improving our contract and preparing to deploy it on a real test network.
 
-1. First, make sure you switch to this branch, which has some helper contracts pre-added, which we will explain in due course as we build our NFTs with an actual marketplace in mind.
+1. First, make sure you switch to this branch, which has some helper contracts pre-added, which we will explain in due course as we build our NFTs with an actual marketplace in mind. We'll likely need to clean things up after our previous adventures, so run these two lines in your terminal:
 
 ```bash
 git checkout lesson-2
+npx hardhat clean
 ```
 
 2. Next, we're going to split up our Babel contract. Ideally, we want to keep all the logic associated with minting, trading and transfering our NFTs in one place, and just house the top-level information about Babel in the current contract. So, in your `contracts` directory, create a new file called `ERC721Tradable.sol` and add the code below to it. As always, we will explain this code in the live session:
@@ -219,17 +220,10 @@ Seeing as our contract now expects the Proxy Address it references to be passed 
 const babel = await BabelFactory.deploy(PROXY_REGISTRATION_ADDRESS);
 ```
 
-5. In order to run this new deployment, you'll probably need to clean some things up in your repo from previous sessions. So, let's open a terminal and run:
+5. Because we cleaned things up at the beginning of this session, and have made all these structural changes, we'll need to recompile our contracts. In order to do so without errors, we'll need to tell our typescript modules not to try and transpile stuff just yet. Once we've got new compiled code, we can deploy it. Open a terminal and run:
 
 ```bash
-npx hardhat clean
 TS_NODE_TRANSPILE_ONLY=1 npx hardhat compile
-npx hardhat node
-```
-
-Then opening another terminal and running:
-
-```bash
 npx hardhat deploy
 ```
 
@@ -373,7 +367,7 @@ describe("babel", () => {
 
 7. Now, we can run `npx hardhat test` in our terminal and check the output matches our expectations and descriptions of how our Babel NFT contract should behave.
 
-8. We'll also need to write another two tasks: 
+8. We have also included for you another directory in `tasks` to begin helping with all the various operations you can consider writing against your new contract. We'll go over this in some detail during the live session.
 
 ### The Final Test
 
@@ -448,30 +442,28 @@ const config: HardhatUserConfig = {
 export default config;
 ```
 
-10. The new tasks referenced here will also have appeared magically in your `tasks/operations/` directory when you checked out this branch. We'll discuss them in the session.
+10. You'll need to rename `.env.sample` to `.env` and put in values for `INFURA_API_KEY` and  `ETHERSCAN_API_KEY`, as well as a private key (which you can get from Metamask). Make sure the RINKEBY_PRIVATE_KEY corresponds to an address that has some Rinkeby ETH in it. Fetch the locally deployed address you stored in Step 5 and paste it into LOCALHOST_CONTRACT_ADDRESS.
 
-11. You'll need to rename `.env.sample` to `.env` and put in values for `INFURA_API_KEY` and  `ETHERSCAN_API_KEY`, as well as a private key (which you can get from Metamask). Make sure the RINKEBY_PRIVATE_KEY corresponds to an address that has some Rinkeby ETH in it. Fetch the locally deployed address you stored in Step 5 and paste it into LOCALHOST_CONTRACT_ADDRESS.
-
-12. Let's do one last check locally that these tasks are working.
+11. Let's do one last check locally that these tasks are working.
 
 ```bash
 npx hardhat mint-token --metadata-uri ar://TaQoXaLI8TzBIooL3CGPQN2ZGuFNZkvff3y00tg7u7s
 npx hardhat burn-token --token-id 0
 ```
 
-13. Phew, we're finally ready to deploy to Rinkeby! (If you're just reading through this, rather than participating in the session with us, then make sure you use some permanent reference for the contract metadata in `Babel.sol` from Step 3 before proceeding. Alternatively, you can use `https://arweave.net/dI21K6IoG8k1kzVUNPswpSgyZ_NktEBqu2KUWbl9zMc`, which is where we've placed some example metadata.)
+12. Phew, we're finally ready to deploy to Rinkeby! (If you're just reading through this, rather than participating in the session with us, then make sure you use some permanent reference for the contract metadata in `Babel.sol` from Step 3 before proceeding. Alternatively, you can use `https://arweave.net/dI21K6IoG8k1kzVUNPswpSgyZ_NktEBqu2KUWbl9zMc`, which is where we've placed some example metadata.)
 
 ```bash
 npx hardhat deploy --network rinkeby
 ```
 
-14. Now, we can mint a token and see what it looks like on Opensea...
+13. Now, we can mint a token and see what it looks like on Opensea...
 
 ```bash
 npx hardhat mint-token --network rinkeby --metadata-uri ar://TaQoXaLI8TzBIooL3CGPQN2ZGuFNZkvff3y00tg7u7s
 ```
 
-15. Navigate to [Opensea's test domain](https://testnets.opensea.io/) and put the MINT_TO_ADDRESS into the search. The Babel NFT you just minted should show up under that address' assets.
+14. Navigate to [Opensea's test domain](https://testnets.opensea.io/) and put the MINT_TO_ADDRESS into the search. The Babel NFT you just minted should show up under that address' assets.
 
 ## Conclusion
 
