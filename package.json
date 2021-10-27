@@ -31,5 +31,9 @@
         "ts-node": "^10.2.1",
         "typechain": "^5.1.2",
         "typescript": "^4.4.3"
+    },
+    "dependencies": {
+        "keccak256": "^1.0.3",
+        "merkletreejs": "^0.2.24"
     }
 }
