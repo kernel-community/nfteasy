@@ -67,113 +67,60 @@ In the contract
   <summary>
     we need a public function callable by anyone
   </summary>
+
   ```javascript
     function mintToken(address tokenId) external {
         _safeMint(msg.sender, tokenId);
     }
   ```
-</details>
 
+</details>
 <details>
   <summary>
     but we don't want it to be called by everyone, so we need some require
   </summary>
+
   ```javascript
     function mintToken(address tokenId) external {
         require(...);
         _safeMint(msg.sender, tokenId);
     }
   ```
+
 </details>
 
 <details>
   <summary>
     we'll also include the "little something" into the mix, that will be used to verify an authorised user (receiver of the NFT)
   </summary>
+
   ```javascript
     function mintToken(address tokenId, bytes calldata signature, address account) external {
         require(...); // this is where we verify
         _safeMint(account, tokenId); // why did we change this? -- because we only want to mint to "verified" tokens, not msg.sender -- signature being the source of truth
     }
   ```
+
 </details>
 
 <details>
   <summary>
     we'll want the `require` to take in account and signature and verify if the account is a valid "minter"
   </summary>
-  ```
+
+  ```javascript
   function mintToken(address tokenId, bytes calldata signature, address account) external {
 			require(_verify(_hash(account, tokenId), signature), "Invalid signature"); // this is where we verify
 			_safeMint(account, tokenId); // why did we change this? -- because we only want to mint to "verified" tokens, not msg.sender -- signature being the source of truth
   }
   ```
+
   - `_hash` will produce a simple ECDSA sig of the 2 args
   - `_verify` will take a hash and a signature and will first recover address that signed the hash (using signature and hash) and then return true only if the recovered address has a minter role and will return false otherwise
 
 </details>
 
-<details>
-  <summary>
-    Entire contract code
-  </summary>
-  ```javascript
-    // SPDX-License-Identifier: MIT
-    pragma solidity 0.8.9;
-
-    import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-    import "@openzeppelin/contracts/access/AccessControl.sol";
-    import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-    import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
-    import "hardhat/console.sol";
-
-    contract BabelAuthMint is ERC721, EIP712, AccessControl {
-        bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-        constructor()
-        ERC721('Babel', 'LIB')
-        EIP712('Babel', '1.0.0') {
-          _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        }
-
-        function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
-            return super.supportsInterface(interfaceId);
-        }
-
-        /**
-        * @dev Link to Contract metadata https://docs.opensea.io/docs/contract-level-metadata
-        */
-        function contractURI() public pure returns (string memory) {
-            return "https://arweave.net/dI21K6IoG8k1kzVUNPswpSgyZ_NktEBqu2KUWbl9zMc";
-        }
-
-        function claim(
-          address to, 
-          uint256 tokenId, 
-          bytes calldata proof
-        ) external {
-          require(_verify(_hash(tokenId, to), proof), "Invalid proof");
-          _safeMint(to, tokenId);
-        }
-
-        function _hash(uint256 id, address addr)
-        internal view returns (bytes32) {
-          return _hashTypedDataV4(keccak256(abi.encode(
-                keccak256("NFT(uint256 tokenId,address account)"),
-                id,
-                addr
-            )));
-        }
-
-        function _verify(bytes32 digest, bytes memory signature)
-        internal view returns (bool) {
-          return hasRole(
-            MINTER_ROLE, 
-            ECDSA.recover(digest, signature)
-          );
-        }
-    }
-  ```
-</details>
+- [Entire contract code](/contracts/BabelAuthMint.sol)
 
 ### With Merkle Trees
 
@@ -185,38 +132,40 @@ In the contract
   <summary>
     A Brief on Merkle Trees
   </summary>
+
   - A merkle tree, also known as a binary hash tree, is a data structure used for efficiently summarizing and verifying the integrity of large sets of data. Merkle trees are binary trees containing cryptographic hashes.
   - Binary = each node has ≤ 2 branches
   - Best used for summarizing and verification
-  - Used in peer to peer networks such as Tor, Bitcoin (Blockchain networks), GiT
+  - Used in peer to peer networks such as Tor, Bitcoin (Blockchain networks), Git
+
 </details>
 
 So, in the contract
 
 <details>
   <summary>If we make the contract aware of just the root</summary>
-</details>
+
   ```javascript
-    ...
-
     bytes32 immutable public root;
-
     function setMerkleRoot (bytes32 newRoot) public onlyOwner {
             root = newRoot;
     }
-
-    ...
   ```
+
+</details>
+
 <details>
   <summary>
     And on each call to mint, we generate the leaf and check if it exists in the merkle tree rooted at root
   </summary>
+
   ```javascript
     function mintToken(address account, uint256 tokenId, bytes32[] calldata proof) external {
         require(_verify(_leaf(account, tokenId), proof), "Invalid merkle proof");
         _safeMint(account, tokenId);
     }
   ```
+
   - `_leaf` creates a leaf from the 2 args, that will be checked for existence is the tree
   - `_verify` Takes a leaf, proof and root — proof is the claim that leaf exists in the tree, the function returns true if the leaf is a part of the tree (claim is correct), and returns false otherwise
 </details>
